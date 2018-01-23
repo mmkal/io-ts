@@ -351,11 +351,16 @@ export class RecursiveType<RT extends Any, A = any, O = A, I = mixed> extends Ty
   }
 }
 
-export const recursion = <A, RT extends Mixed = Mixed, O = A, I = mixed>(
+export const recursion = <A, O = mixed, I = mixed, RT extends Type<A, O, I> = Type<A, O, I>>(
   name: string,
   definition: (self: RT) => RT
 ): RecursiveType<RT, A, O, I> => {
-  const Self: any = new RecursiveType(name, (m): m is A => type.is(m), (m, c) => type.validate(m, c), identity)
+  const Self: any = new RecursiveType<RT, A, O, I>(
+    name,
+    (m): m is A => type.is(m),
+    (m, c) => type.validate(m, c),
+    identity as any
+  )
   const type = definition(Self)
   Self.type = type
   Self.serialize = type.serialize

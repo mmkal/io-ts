@@ -270,11 +270,11 @@ type Rec = {
   b: Rec | undefined
 }
 
-const Rec = t.recursion<Rec, Generable>('T', self =>
-  t.interface({
+const RecRT = t.recursion<Rec, Rec, t.mixed, GenerableInterface>('T', self => {
+  return t.interface({
     a: t.number,
     b: t.union([self, t.undefined])
   })
-)
+})
 
-f(Rec) // OK!
+f(RecRT) // OK!
