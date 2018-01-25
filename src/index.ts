@@ -434,7 +434,9 @@ export class InterfaceType<P extends { [key: string]: Any }, A = any, O = A, I =
   }
 }
 
-export type Props = { [key: string]: Mixed }
+export interface Props {
+  [key: string]: Mixed
+}
 
 const getNameFromProps = (props: Props): string =>
   `{ ${Object.keys(props)
@@ -450,11 +452,15 @@ const useIdentity = (props: Props): boolean => {
   return true
 }
 
+export type TypeOfProps<P extends { [key: string]: Any }> = { [K in keyof P]: TypeOf<P[K]> }
+
+export type OutputOfProps<P extends { [key: string]: Any }> = { [K in keyof P]: OutputOf<P[K]> }
+
 /** @alias `interface` */
 export const type = <P extends Props>(
   props: P,
   name: string = getNameFromProps(props)
-): InterfaceType<P, { [K in keyof P]: TypeOf<P[K]> }, { [K in keyof P]: OutputOf<P[K]> }, mixed> =>
+): InterfaceType<P, TypeOfProps<P>, OutputOfProps<P>, mixed> =>
   new InterfaceType(
     name,
     (m): m is { [K in keyof P]: TypeOf<P[K]> } => {
@@ -519,12 +525,10 @@ export class PartialType<P extends { [key: string]: Any }, A = any, O = A, I = m
   }
 }
 
-export type PartialOf<P extends Props> = { [K in keyof P]?: TypeOf<P[K]> }
-
 export const partial = <P extends Props>(
   props: P,
   name: string = `PartialType<${getNameFromProps(props)}>`
-): PartialType<P, PartialOf<P>, { [K in keyof P]?: OutputOf<P[K]> }, mixed> => {
+): PartialType<P, Partial<TypeOfProps<P>>, Partial<OutputOfProps<P>>, mixed> => {
   const partials: Props = {}
   for (let k in props) {
     partials[k] = union([props[k], undefinedType])
@@ -925,7 +929,7 @@ export class StrictType<P extends { [key: string]: Any }, A = any, O = A, I = mi
 export const strict = <P extends Props>(
   props: P,
   name: string = `StrictType<${getNameFromProps(props)}>`
-): StrictType<P, { [K in keyof P]: TypeOf<P[K]> }, { [K in keyof P]: OutputOf<P[K]> }, mixed> => {
+): StrictType<P, TypeOfProps<P>, OutputOfProps<P>, mixed> => {
   const loose = type(props)
   return new StrictType(
     name,

@@ -70,9 +70,10 @@ const x8: TypeOf<typeof I1> = { age: 43 }
 const x9: TypeOf<typeof I1> = { name: 'name', age: 43 }
 
 const I2 = t.interface({ name: t.string, father: t.interface({ surname: t.string }) })
+type I2T = TypeOf<typeof I2>
 // $ExpectError Property 'surname' is missing in type '{}'
-const x10: TypeOf<typeof I2> = { name: 'name', father: {} }
-const x11: TypeOf<typeof I2> = { name: 'name', father: { surname: 'surname' } }
+const x10: I2T = { name: 'name', father: {} }
+const x11: I2T = { name: 'name', father: { surname: 'surname' } }
 
 //
 // dictionary
@@ -118,10 +119,11 @@ const x20: TypeOf<typeof T1> = ['s', 1]
 //
 
 const P1 = t.partial({ name: t.string })
+type P1T = TypeOf<typeof P1>
 // $ExpectError Type 'number' is not assignable to type 'string | undefined'
-const x21: TypeOf<typeof P1> = { name: 1 }
-const x22: TypeOf<typeof P1> = {}
-const x23: TypeOf<typeof P1> = { name: 's' }
+const x21: P1T = { name: 1 }
+const x22: P1T = {}
+const x23: P1T = { name: 's' }
 
 //
 // readonly
